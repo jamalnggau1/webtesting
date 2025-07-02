@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Join via Referral</title>
+  <script>
+    // ambil kode referral dari URL jika ada
+    window.onload = () => {
+      const params = new URLSearchParams(window.location.search);
+      const ref = params.get("ref");
+      if (ref) {
+        document.getElementById("referral").value = ref;
+      }
+    };
+  </script>
+</head>
+<body>
+  <h1>Join Our Platform</h1>
+  <form action="https://httpbin.org/post" method="POST">
+    <label>Email: <input type="email" name="email" required></label><br><br>
+    <!-- ini input tersembunyi untuk menyimpan kode referral -->
+    <input type="hidden" name="referral" id="referral">
+    <button type="submit">Join</button>
+  </form>
+</body>
+</html>
