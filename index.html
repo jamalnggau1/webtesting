@@ -27,13 +27,14 @@
   </div>
 
   <script>
-    fetch('/api/submit') // GET request to get referral stats
-      .then(res => res.json())
-      .then(data => {
-        const stats = Object.entries(data.referrals || {}).map(([ref, count]) =>
-          `<p><strong>${ref}:</strong> ${count} referral(s)</p>`).join('');
-        document.getElementById('stats').innerHTML = stats || 'Belum ada referral.';
-      });
-  </script>
+  fetch('/api/submit')
+    .then(res => res.json())
+    .then(data => {
+      const stats = (data.stats || []).map(item =>
+        `<p><strong>${item.owner}</strong> (${item.referral}): ${item.count} referral(s)</p>`).join('');
+      document.getElementById('stats').innerHTML = stats || 'Belum ada referral.';
+    });
+</script>
+
 </body>
 </html>
