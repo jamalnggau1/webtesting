@@ -1,96 +1,34 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Form Pendaftaran dengan Referral</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      padding: 2em;
-      max-width: 500px;
-      margin: auto;
-    }
-    input, button {
-      display: block;
-      width: 100%;
-      margin-bottom: 1em;
-      padding: 0.5em;
-      font-size: 16px;
-    }
-    #hasil {
-      color: green;
-      font-weight: bold;
-    }
-    hr {
-      margin: 2em 0;
-    }
-  </style>
+  <meta charset="UTF-8">
+  <title>Daftar & Referral</title>
 </head>
 <body>
-  <h2>Form Daftar</h2>
-
-  <form id="daftarForm">
-    <label for="email">Email:</label>
-    <input type="email" id="email" name="email" required />
-
-    <label for="ref">Kode Referral:</label>
-    <input type="text" id="ref" name="ref" placeholder="Opsional" />
-
+  <h2>Form Pendaftaran</h2>
+  <form id="signup-form">
+    <input type="email" id="email" placeholder="Email" required><br><br>
+    <input type="text" id="referral" placeholder="Kode Referral (opsional)"><br><br>
     <button type="submit">Daftar</button>
   </form>
-
-  <p id="hasil"></p>
-
-  <hr />
-
-  <h3>Statistik Referral</h3>
-  <div id="stats">Memuat data...</div>
-
+  <div id="result"></div>
   <script>
-    // Tangani submit form tanpa reload
-    document.getElementById('daftarForm').addEventListener('submit', async function (e) {
+    const form = document.getElementById('signup-form');
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
-
       const email = document.getElementById('email').value;
-      const ref = document.getElementById('ref').value;
+      const referral = document.getElementById('referral').value;
 
       const res = await fetch('/api/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, ref })
+        body: JSON.stringify({ email, ref: referral })
       });
 
       const data = await res.json();
-
-      if (data.error) {
-        document.getElementById('hasil').style.color = 'red';
-        document.getElementById('hasil').textContent = data.error;
-      } else {
-        document.getElementById('hasil').style.color = 'green';
-        document.getElementById('hasil').textContent =
-          `${data.message}` +
-          (data.yourReferral ? ` | Kode referral kamu: ${data.yourReferral}` : '') +
-          (data.usedRef ? ` | Referral digunakan: ${data.usedRef}` : '');
-      }
-
-      // Refresh statistik referral
-      loadStats();
+      document.getElementById('result').innerText =
+        `Referral kamu: ${data.referral} | Referral yang kamu pakai: ${data.usedRef || 'Tidak ada'}`;
     });
-
-    // Fungsi memuat statistik referral
-    function loadStats() {
-      fetch('/api/submit')
-        .then(res => res.json())
-        .then(data => {
-          const stats = (data.stats || []).map(item =>
-            `<p><strong>${item.owner}</strong> (${item.referral}): ${item.count} referral(s)</p>`
-          ).join('');
-          document.getElementById('stats').innerHTML = stats || 'Belum ada referral.';
-        });
-    }
-
-    // Panggil pertama kali saat halaman dimuat
-    loadStats();
   </script>
 </body>
 </html>
