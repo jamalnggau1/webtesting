@@ -1,21 +1,14 @@
-import fs from 'fs';
-const file = 'users.json';
-
 export default function handler(req, res) {
-  if (req.method === 'POST') {
-    const { email } = req.body;
-    const users = fs.existsSync(file) ? JSON.parse(fs.readFileSync(file)) : [];
-    const user = users.find(u => u.email === email);
+  if (req.method !== 'POST') return res.status(405).json({ message: 'Method not allowed' });
 
-    if (!user) {
-      return res.status(400).json({ error: 'User not found' });
-    }
+  const auth = req.headers.authorization || '';
+  const token = auth.split(' ')[1];
 
-    user.coins = (user.coins || 0) + 1;
-    fs.writeFileSync(file, JSON.stringify(users, null, 2));
+  if (!token) return res.status(401).json({ message: 'Token tidak ditemukan' });
 
-    res.status(200).json({ coins: user.coins });
-  } else {
-    res.status(405).json({ error: 'Method not allowed' });
-  }
+  const email = Buffer.from(token, 'base64').toString('utf-8');
+  if (!email.includes('@')) return res.status(403).json({ message: 'Token tidak valid' });
+
+  // Simulasi proses mining
+  res.status(200).json({ message: `⛏️ Mining berjalan untuk ${email}` });
 }
