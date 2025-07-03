@@ -1,61 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Web Mining Demo</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login</title>
 </head>
 <body>
   <h2>Login</h2>
-  <form id="login-form">
-    <input type="email" id="email" placeholder="Email" required><br><br>
+
+  <form id="loginForm">
+    <input type="email" id="email" placeholder="Email" required /><br><br>
+    <input type="password" id="password" placeholder="Password" required /><br><br>
     <button type="submit">Login</button>
   </form>
 
-  <div id="mining-section" style="display:none;">
-    <h2>Selamat datang!</h2>
-    <p>Alamat: <span id="user-email"></span></p>
-    <p>Total Coin: <span id="coins">0</span></p>
-    <button id="mine-btn">Mulai Mining</button>
-  </div>
+  <div id="result"></div>
 
   <script>
-    let sessionEmail = null;
-    let coins = 0;
+    const form = document.getElementById("loginForm");
+    const resultBox = document.getElementById("result");
 
-    const loginForm = document.getElementById('login-form');
-    const miningSection = document.getElementById('mining-section');
-    const emailDisplay = document.getElementById('user-email');
-    const coinDisplay = document.getElementById('coins');
-
-    loginForm.addEventListener('submit', async (e) => {
+    form.addEventListener("submit", async function (e) {
       e.preventDefault();
-      const email = document.getElementById('email').value;
-      const res = await fetch('/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email })
-      });
-      const data = await res.json();
-      if (res.ok) {
-        sessionEmail = data.email;
-        loginForm.style.display = 'none';
-        miningSection.style.display = 'block';
-        emailDisplay.innerText = sessionEmail;
-        coins = data.coins || 0;
-        coinDisplay.innerText = coins;
-      }
-    });
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
 
-    document.getElementById('mine-btn').addEventListener('click', async () => {
-      const res = await fetch('/api/mine', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: sessionEmail })
+      const response = await fetch("/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email, password })
       });
-      const data = await res.json();
-      if (res.ok) {
-        coins = data.coins;
-        coinDisplay.innerText = coins;
+
+      const result = await response.json();
+      if (response.ok) {
+        resultBox.textContent = `Login berhasil: ${result.message}`;
+      } else {
+        resultBox.textContent = `Gagal: ${result.message || result.error}`;
       }
     });
   </script>

@@ -6,7 +6,25 @@ export default function handler(req, res) {
     return res.status(405).json({ message: 'Method not allowed' });
   }
 
+  const { emailexport default function handler(req, res) {
+  if (req.method !== "POST") {
+    return res.status(405).json({ message: "Method not allowed" });
+  }
+
   const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ message: "Email dan password wajib diisi" });
+  }
+
+  // Simulasi login sukses (tanpa database dulu)
+  if (password === "123456") {
+    return res.status(200).json({ message: "Login sukses!", email });
+  } else {
+    return res.status(401).json({ message: "Password salah" });
+  }
+}
+, password } = req.body;
 
   if (!email || !password) {
     return res.status(400).json({ message: 'Email dan password wajib diisi' });
