@@ -1,33 +1,64 @@
+// === index.html ===
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Daftar & Referral</title>
+  <title>Web Mining Demo</title>
 </head>
 <body>
-  <h2>Form Pendaftaran</h2>
-  <form id="signup-form">
+  <h2>Login</h2>
+  <form id="login-form">
     <input type="email" id="email" placeholder="Email" required><br><br>
-    <input type="text" id="referral" placeholder="Kode Referral (opsional)"><br><br>
-    <button type="submit">Daftar</button>
+    <button type="submit">Login</button>
   </form>
-  <div id="result"></div>
+
+  <div id="mining-section" style="display:none;">
+    <h2>Selamat datang!</h2>
+    <p>Alamat: <span id="user-email"></span></p>
+    <p>Total Coin: <span id="coins">0</span></p>
+    <button id="mine-btn">Mulai Mining</button>
+  </div>
+
   <script>
-    const form = document.getElementById('signup-form');
-    form.addEventListener('submit', async (e) => {
+    let sessionEmail = null;
+    let coins = 0;
+
+    const loginForm = document.getElementById('login-form');
+    const miningSection = document.getElementById('mining-section');
+    const emailDisplay = document.getElementById('user-email');
+    const coinDisplay = document.getElementById('coins');
+
+    loginForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const email = document.getElementById('email').value;
-      const referral = document.getElementById('referral').value;
-
-      const res = await fetch('/api/submit', {
+      const res = await fetch('/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, ref: referral })
+        body: JSON.stringify({ email })
       });
-
       const data = await res.json();
-      document.getElementById('result').innerText =
-        `Referral kamu: ${data.referral} | Referral yang kamu pakai: ${data.usedRef || 'Tidak ada'}`;
+      if (res.ok) {
+        sessionEmail = data.email;
+        loginForm.style.display = 'none';
+        miningSection.style.display = 'block';
+        emailDisplay.innerText = sessionEmail;
+        coins = data.coins || 0;
+        coinDisplay.innerText = coins;
+      }
+    });
+
+    document.getElementById('mine-btn').addEventListener('click', async () => {
+      const res = await fetch('/api/mine', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: sessionEmail })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        coins = data.coins;
+        coinDisplay.innerText = coins;
+      }
     });
   </script>
 </body>

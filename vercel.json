@@ -1,7 +1,7 @@
 // === vercel.json ===
 {
   "rewrites": [
-    { "source": "/api/submit", "destination": "/api/submit.js" },
-    { "source": "/api/referral", "destination": "/api/referral.js" }
+    { "source": "/api/login", "destination": "/api/login.js" },
+    { "source": "/api/mine", "destination": "/api/mine.js" }
   ]
 }
