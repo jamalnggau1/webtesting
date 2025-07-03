@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Masuk Portal</title>
+</head>
+<body>
+  <h2>Masuk Portal</h2>
+  <form action="/api/x/entrygate" method="POST">
+    <label for="u">Identitas:</label>
+    <input type="text" id="u" name="u" required>
+    <br><br>
+    <label for="k">Kode Masuk:</label>
+    <input type="text" id="k" name="k">
+    <br><br>
+    <button type="submit">Kirim</button>
+  </form>
+
+  <hr>
+  <h3>Info Referensi</h3>
+  <div id="info">Memuat...</div>
+
+  <script>
+    fetch('/api/x/entrygate')
+      .then(res => res.json())
+      .then(data => {
+        const list = Object.entries(data.data || {}).map(([k, v]) => `📌 ${k}: ${v}`).join('<br>');
+        document.getElementById('info').innerHTML = list || 'Tidak ada data.';
+      });
+  </script>
+</body>
+</html>
